@@ -44,11 +44,22 @@
                 <Button Width="350" Height="50" Content="GENERATE" HorizontalAlignment="Center" Click="Button_Click_1"/>
             </Grid>
             <Grid Grid.Row="1">
-                <TextBlock Text="**MachineCode**" Margin="10" Background="#DDDDDD" Padding="10"/>
+                <TextBlock x:Name="MachineCODE" Margin="10" Background="#DDDDDD" Padding="10"/>
             </Grid>
         </Grid>
         <Grid Grid.Column="2">
             <DataGrid x:Name="Commands" CanUserAddRows="False" CanUserDeleteRows="False" IsReadOnly="True">
+                <DataGrid.Columns>
+                    <DataGridTemplateColumn Header="OP" IsReadOnly="True" Width="auto">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal">
+                                    <Button Content="DEL" x:Name="EditButton" Click="EditButton_Click"/>
+                                </StackPanel>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                </DataGrid.Columns>
             </DataGrid>
         </Grid>
     </Grid>

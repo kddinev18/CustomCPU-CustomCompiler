@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -31,6 +32,7 @@ namespace AssemblyToMachineCode
         public MainWindow1()
         {
             InitializeComponent();
+            Commands.ItemsSource = commands;
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
@@ -43,9 +45,41 @@ namespace AssemblyToMachineCode
             Commands.ItemsSource = commands;
         }
 
+        public static string RemoveSpecialCharacters(string str)
+        {
+            StringBuilder sb = new StringBuilder();
+            foreach (char c in str)
+            {
+                if ((c >= '0' && c <= '9') || (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || c == '.' || c == '_')
+                {
+                    sb.Append(c);
+                }
+            }
+            return sb.ToString();
+        }
+
         private void Button_Click_1(object sender, RoutedEventArgs e)
         {
+            string[] container = ASSY_CODE.Text.Split(';');
+            foreach (var command in container)
+            {
+                if (command == "")
+                    continue;
+                string temp = RemoveSpecialCharacters(command);
+                if (commands.Where(x => x.Command == temp) != null)
+                {
+                    MachineCODE.Text += commands.Where(x => x.Command == temp).First().MachineCode + '\n';
+                }
+            }
 
+            File.WriteAllText("Code", MachineCODE.Text);
+        }
+
+        private void EditButton_Click(object sender, RoutedEventArgs e)
+        {
+            Commands dataRow = (Commands)Commands.SelectedItem;
+            commands.Remove(dataRow);
+            Commands.ItemsSource = commands;
         }
     }
 }

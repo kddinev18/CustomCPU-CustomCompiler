@@ -31,7 +31,7 @@
             <Grid Grid.Row="1">
                 <StackPanel Margin="5">
                     <TextBlock Text="ASSEBLY CODE:"/>
-                    <TextBox x:Name="ASSY_CODE" Margin="10" Height="376" AcceptsReturn="True" VerticalScrollBarVisibility="Visible"/>
+                    <TextBox x:Name="ASSY_CODE" Margin="10" Height="376" AcceptsReturn="True" AcceptsTab="True" VerticalScrollBarVisibility="Visible"/>
                 </StackPanel>
             </Grid>
         </Grid>
@@ -44,7 +44,7 @@
                 <Button Width="350" Height="50" Content="GENERATE" HorizontalAlignment="Center" Click="Button_Click_1"/>
             </Grid>
             <Grid Grid.Row="1">
-                <TextBlock x:Name="MachineCODE" Margin="10" Background="#DDDDDD" Padding="10"/>
+                <TextBox x:Name="MachineCODE" Margin="10" Background="#DDDDDD" Padding="10" IsReadOnly="True"/>
             </Grid>
         </Grid>
         <Grid Grid.Column="2">

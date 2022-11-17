@@ -29,7 +29,7 @@ namespace AssemblyToMachineCode
     public partial class MainWindow1 : Window
     {
         public static ObservableCollection<Commands> commands = new ObservableCollection<Commands>();
-        private List<string> labels = new List<string>();
+        private Dictionary<string, int> labels = new Dictionary<string, int>();
         public MainWindow1()
         {
             InitializeComponent();
@@ -59,30 +59,93 @@ namespace AssemblyToMachineCode
             return sb.ToString();
         }
 
+        static string DecToBin(int decimalNumber)
+        {
+            int remainder = 0;
+            char[] sb = new char[8];
+
+            for (int i = 0; i < 8; i++)
+            {
+                remainder = decimalNumber % 2;
+                decimalNumber /= 2;
+                sb[i] = remainder == 0 ? '0' : '1';
+            }
+            Array.Reverse(sb);
+            return String.Join("",sb);
+        }
+
+        public static string BinaryStringToHexString(string binary)
+        {
+            if (string.IsNullOrEmpty(binary))
+                return binary;
+
+            StringBuilder result = new StringBuilder(binary.Length / 8 + 1);
+
+            // TODO: check all 1's or 0's... throw otherwise
+
+            int mod4Len = binary.Length % 8;
+            if (mod4Len != 0)
+            {
+                // pad to length multiple of 8
+                binary = binary.PadLeft(((binary.Length / 8) + 1) * 8, '0');
+            }
+
+            for (int i = 0; i < binary.Length; i += 8)
+            {
+                string eightBits = binary.Substring(i, 8);
+                result.AppendFormat("{0:X2}", Convert.ToByte(eightBits, 2));
+            }
+
+            return result.ToString();
+        }
+
         private void Button_Click_1(object sender, RoutedEventArgs e)
         {
+            labels = new Dictionary<string, int>();
+            MachineCODE.Text = "";
             string[] container = ASSY_CODE.Text.Split(';');
+            int assemblyLine = 0;
+            int number = 0;
             foreach (var command in container)
             {
                 if (command == "")
                     continue;
-                if(labels.Contains(command))
-                {
-
-                }
-                if(command.Contains("label"))
-                {
-                    labels.Add(command.Split(':')[1]);
-                    continue
-                }
                 string temp = RemoveSpecialCharacters(command);
-                if (commands.Where(x => x.Command == temp) != null)
+                if(int.TryParse(temp, out number))
                 {
-                    MachineCODE.Text += commands.Where(x => x.Command == temp).First().MachineCode + '\n';
+                    assemblyLine++;
+                    MachineCODE.Text += BinaryStringToHexString(DecToBin(number));
+                    MachineCODE.Text += '\n';
+                }
+                else if (labels.ContainsKey(temp))
+                {
+                    MachineCODE.Text += BinaryStringToHexString(DecToBin(labels[temp]));
+                    MachineCODE.Text += '\n';
+                }
+                else if(temp.Contains("label"))
+                {
+                    if(labels.ContainsKey(temp))
+                    {
+                        // Error
+                    }
+                    else
+                    {
+                        labels.Add(temp.Split(':')[1], assemblyLine);
+                    }
+                }
+                else if (commands.Where(x => x.Command == temp) != null)
+                {
+                    MachineCODE.Text += BinaryStringToHexString(commands.Where(x => x.Command == temp).First().MachineCode);
+                    MachineCODE.Text += '\n';
+                    assemblyLine++;
+                }
+                else
+                {
+                    // Error
                 }
             }
 
-            File.WriteAllText("Code", MachineCODE.Text);
+            File.WriteAllText("Code.txt", MachineCODE.Text);
         }
 
         private void EditButton_Click(object sender, RoutedEventArgs e)

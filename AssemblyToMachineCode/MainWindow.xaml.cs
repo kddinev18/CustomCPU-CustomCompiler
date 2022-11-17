@@ -29,6 +29,7 @@ namespace AssemblyToMachineCode
     public partial class MainWindow1 : Window
     {
         public static ObservableCollection<Commands> commands = new ObservableCollection<Commands>();
+        private List<string> labels = new List<string>();
         public MainWindow1()
         {
             InitializeComponent();
@@ -50,7 +51,7 @@ namespace AssemblyToMachineCode
             StringBuilder sb = new StringBuilder();
             foreach (char c in str)
             {
-                if ((c >= '0' && c <= '9') || (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || c == '.' || c == '_')
+                if ((c >= '0' && c <= '9') || (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || c == '.' || c == '_' || c == ':')
                 {
                     sb.Append(c);
                 }
@@ -65,6 +66,15 @@ namespace AssemblyToMachineCode
             {
                 if (command == "")
                     continue;
+                if(labels.Contains(command))
+                {
+
+                }
+                if(command.Contains("label"))
+                {
+                    labels.Add(command.Split(':')[1]);
+                    continue
+                }
                 string temp = RemoveSpecialCharacters(command);
                 if (commands.Where(x => x.Command == temp) != null)
                 {
